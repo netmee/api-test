@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__.'/../vendor/autoload.php';
 
+use Symfony\Component\HttpFoundation\Request;
+
 $app = new Silex\Application();
 $app['debug'] = true;
 
@@ -70,6 +72,15 @@ $app->get('/users/{id}', function (Silex\Application $app, $id) use ($users) {
     $user = $users[$id];
 
     return  $app->json($user);
+});
+
+$app->post('/api/v1/checktoken', function (Request $request) use ($app) {
+    file_put_contents("debug.log", print_r($request));
+    $response = array(
+        "status" => "success",
+        "message" => "Appel POST à l'Api réussi !",
+    );
+    return $app->json($request, 200);
 });
 
 $app->run();
