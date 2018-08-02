@@ -2,6 +2,7 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 $app = new Silex\Application();
 $app['debug'] = true;
@@ -60,6 +61,13 @@ $users = array(
     )
 );
 
+$app->before(function (Request $request) {
+    if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
+        $data = json_decode($request->getContent(), true);
+        $request->request->replace(is_array($data) ? $data : array());
+    }
+});
+
 $app->get('/users', function (Silex\Application $app) use ($users) {
     return $app->json($users);
 });
@@ -75,12 +83,13 @@ $app->get('/users/{id}', function (Silex\Application $app, $id) use ($users) {
 });
 
 $app->post('/api/v1/checktoken', function (Request $request) use ($app) {
-    file_put_contents("debug.log", print_r($request));
+    error_log(time() . "\n", 3, __DIR__."/debug.log");
+    error_log(print_r($request->request, TRUE) . "\n", 3, __DIR__."/debug.log");
     $response = array(
-        "status" => "success",
-        "message" => "Appel POST à l'Api réussi !",
+        "status" => "OK",
+        "timestamp" => time()
     );
-    return $app->json($request, 200);
+    return $app->json($response, 200);
 });
 
 $app->run();
