@@ -83,8 +83,21 @@ $app->get('/users/{id}', function (Silex\Application $app, $id) use ($users) {
 });
 
 $app->post('/api/v1/checktoken', function (Request $request) use ($app) {
+    $content = $request->getContent();
+    $debug = array(
+        "request" => $request->request,
+        "query" => $request->query,
+        "server" => $request->server,
+        "files" => $request->files,
+        "cookies" => $request->cookies,
+        "headers" => $request->headers,
+    );
     error_log(time() . "\n", 3, __DIR__."/debug.log");
-    error_log(print_r($request->request, TRUE) . "\n", 3, __DIR__."/debug.log");
+    error_log(print_r("### Content at " . date(DATE_RFC2822) . " ###", TRUE) . "\n", 3, __DIR__."/debug.log");
+    error_log(print_r($content . "\n", TRUE) . "\n", 3, __DIR__."/debug.log");
+    error_log(print_r("### Request ###", TRUE) . "\n", 3, __DIR__."/debug.log");
+    error_log(print_r($debug, TRUE) . "\n", 3, __DIR__."/debug.log");
+    error_log(print_r("###############", TRUE) . "\n", 3, __DIR__."/debug.log");
     $response = array(
         "status" => "OK",
         "timestamp" => time()
